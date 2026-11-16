@@ -1,8 +1,7 @@
 fastapi
 uvicorn
-sqlalchemy
+sqlalchemy<2.1
 alembic
-psycopg[binary]
 psycopg2-binary
 bcrypt==4.0.1
 passlib
