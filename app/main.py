@@ -1,15 +1,19 @@
 import uuid
 from datetime import datetime
-from fastapi import FastAPI
+from pathlib import Path
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.database import engine, Base, SessionLocal
-from app.models import Producto as ProductoModel
-from app.routers import productos
-from app.routers import auth
-from app.routers import pedidos
+from app.dependencies import get_db
+from app.models import Producto as ProductoModel, Pedido, ItemPedido
+from app.routers import productos, auth, pedidos
 
 # Crear las tablas en la base de datos si no existen
 Base.metadata.create_all(bind=engine)
@@ -35,6 +39,9 @@ finally:
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
+# Middleware de compresión GZip para respuestas mayores a 1 KB (mejora Lighthouse)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
 # Middleware de CORS para permitir peticiones del frontend
 app.add_middleware(
     CORSMiddleware,
@@ -43,6 +50,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Clase para servir imágenes con política de caché de 30 días
+class StaticConCache(StaticFiles):
+    async def get_response(self, path, scope):
+        respuesta = await super().get_response(path, scope)
+        if respuesta.status_code == 200:
+            respuesta.headers["Cache-Control"] = "public, max-age=2592000, immutable"
+        return respuesta
+
+
+Path("uploads/productos").mkdir(parents=True, exist_ok=True)
+Path("app/static/demo").mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticConCache(directory="uploads"), name="static")
+app.mount("/demo", StaticConCache(directory="app/static/demo"), name="demo")
 
 # Montar los routers
 app.include_router(productos.router)
@@ -57,35 +79,30 @@ class SolicitudArrepentimiento(BaseModel):
     codigo_compra: str
     detalle: str | None = None
 
-from app.models import Pedido, ItemPedido
-from app.dependencies import get_db
-from sqlalchemy.orm import Session
-from fastapi import Depends, HTTPException
 
 @app.post("/arrepentimiento")
 def registrar_arrepentimiento(solicitud: SolicitudArrepentimiento, db: Session = Depends(get_db)):
     pedido = db.query(Pedido).filter(Pedido.codigo_compra == solicitud.codigo_compra).first()
-    
+
     if not pedido:
         raise HTTPException(status_code=404, detail="Pedido no encontrado con ese código de compra.")
-    
-    # Check if email matches (security check)
+
     if pedido.usuario.email != solicitud.email:
         raise HTTPException(status_code=400, detail="El correo no coincide con el pedido.")
 
     if pedido.estado == "CANCELADO":
         raise HTTPException(status_code=400, detail="Este pedido ya se encuentra cancelado.")
-    
+
     pedido.estado = "CANCELADO"
-    
+
     for item in pedido.items:
         producto = item.producto
         if producto:
             producto.stock += item.cantidad
-            
+
     codigo_tramite = f"REV-{datetime.now().year}-{uuid.uuid4().hex[:6].upper()}"
     db.commit()
-    
+
     return {
         "mensaje": "Trámite de revocación de compra iniciado con éxito (Resolución 424/2020).",
         "codigo_tramite": codigo_tramite,
@@ -93,9 +110,15 @@ def registrar_arrepentimiento(solicitud: SolicitudArrepentimiento, db: Session =
             "email": solicitud.email,
             "codigo_compra": solicitud.codigo_compra,
             "codigo_tramite": codigo_tramite,
-            "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
+            "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        },
     }
+
+
+@app.get("/salud")
+def salud(db: Session = Depends(get_db)):
+    db.execute(text("SELECT 1"))
+    return {"estado": "ok", "base": "ok"}
 
 
 @app.get("/")
