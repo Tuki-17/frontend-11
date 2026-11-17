@@ -3,8 +3,11 @@ import { getProductos, solicitarArrepentimiento, registerUser, checkout, loginUs
 import { ProductCard } from './components/ProductCard';
 import { AdminPanel } from './components/AdminPanel';
 import toast, { Toaster } from 'react-hot-toast';
+import ActualizacionDisponible from './components/ActualizacionDisponible';
+import { useConectado } from './hooks/useConectado';
 
 export default function App() {
+  const conectado = useConectado();
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -394,9 +397,15 @@ export default function App() {
                 <div className="cart-cft-disclosure">
                   Financiación: Hasta 3 cuotas sin interés | <strong>CFT: 0,00%</strong>
                 </div>
+                {!conectado && (
+                  <p role="status" style={{ color: 'var(--danger)', fontSize: '13px', marginBottom: '10px', fontWeight: '600' }}>
+                    Podés mirar el catálogo, pero para comprar necesitás internet.
+                  </p>
+                )}
                 <button 
                   className="btn btn-primary" 
                   style={{ width: '100%', justifyContent: 'center', padding: '14px' }}
+                  disabled={!conectado}
                   onClick={() => {
                     setIsCartOpen(false);
                     setIsCheckoutOpen(true);
@@ -432,7 +441,7 @@ export default function App() {
 
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setIsCheckoutOpen(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary" disabled={checkoutLoading}>
+                <button type="submit" className="btn btn-primary" disabled={!conectado || checkoutLoading}>
                   {checkoutLoading ? (
                     <>
                       <span className="spinner"></span> Procesando...
@@ -731,6 +740,7 @@ export default function App() {
         </p>
       </footer>
       
+      <ActualizacionDisponible />
     </div>
   );
 }

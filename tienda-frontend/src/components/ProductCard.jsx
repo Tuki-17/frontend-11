@@ -67,6 +67,8 @@ export function ProductCard({ producto, onAddToCart }) {
         <img
           src={imgSrc}
           alt={producto.nombre}
+          width="400"
+          height="400"
           loading="lazy"
           onError={(e) => { e.target.src = PRODUCT_IMAGES.default; }}
         />
