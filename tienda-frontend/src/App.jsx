@@ -16,6 +16,7 @@ export default function App() {
   // Estados del Carrito
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Estados de Compra (Checkout)
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -262,22 +263,49 @@ export default function App() {
           <h1 className="brand-title">🍰 Trampantojos Boutique</h1>
           <span className="brand-subtitle">Pastelería de ilusión óptica · Información transparente (Ley 24.240)</span>
         </div>
-        <div className="nav-actions">
+
+        {/* Controles para móvil */}
+        <div className="mobile-header-controls">
+          {(!user || user.rol !== 'admin') && (
+            <button 
+              className="btn btn-secondary mobile-quick-cart-btn" 
+              onClick={() => setIsCartOpen(true)}
+              aria-label="Abrir carrito"
+            >
+              🛒
+              {cart.length > 0 && (
+                <span className="cart-badge">
+                  {cart.reduce((s, i) => s + i.cantidad, 0)}
+                </span>
+              )}
+            </button>
+          )}
+          <button 
+            className="mobile-menu-toggle-btn"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación"}
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? '✕' : '☰'}
+          </button>
+        </div>
+
+        <nav className={`nav-actions ${isMobileMenuOpen ? 'nav-actions-open' : ''}`}>
           {!user ? (
             <>
-              <button className="btn btn-secondary" onClick={() => setIsLoginOpen(true)}>
+              <button className="btn btn-secondary" onClick={() => { setIsLoginOpen(true); setIsMobileMenuOpen(false); }}>
                 🔑 Iniciar Sesión
               </button>
-              <button className="btn btn-secondary" onClick={abrirRegistro}>
+              <button className="btn btn-secondary" onClick={() => { abrirRegistro(); setIsMobileMenuOpen(false); }}>
                 👤 Registrarse
               </button>
             </>
           ) : (
             <>
-              <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
+              <span className="nav-user-greeting">
                 Hola, {user.nombre} ({user.rol === 'admin' ? 'Administrador' : 'Cliente'})
               </span>
-              <button className="btn btn-secondary" onClick={handleLogout}>
+              <button className="btn btn-secondary" onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}>
                 Cerrar Sesión
               </button>
             </>
@@ -285,14 +313,14 @@ export default function App() {
           
           <button 
             className="btn btn-arrepentimiento" 
-            onClick={() => setIsArrepentimientoOpen(true)}
+            onClick={() => { setIsArrepentimientoOpen(true); setIsMobileMenuOpen(false); }}
             title="Botón de Arrepentimiento - Resolución 424/2020"
           >
             ↩️ Arrepentimiento
           </button>
           
           {(!user || user.rol !== 'admin') && (
-            <button className="btn btn-secondary" onClick={() => setIsCartOpen(true)}>
+            <button className="btn btn-secondary nav-cart-desktop-btn" onClick={() => { setIsCartOpen(true); setIsMobileMenuOpen(false); }}>
               🛒 Carrito
               {cart.length > 0 && (
                 <span className="cart-badge">
@@ -301,7 +329,7 @@ export default function App() {
               )}
             </button>
           )}
-        </div>
+        </nav>
       </header>
 
       {/* Banner Legal */}
@@ -509,9 +537,10 @@ export default function App() {
             {!revocacionTicket ? (
               <form onSubmit={handleArrepentimientoSubmit}>
                 {arrepError && (
-                  <p style={{ color: 'var(--danger)', fontSize: '13px', background: 'var(--danger-light)', padding: '8px', borderRadius: '4px', marginBottom: '12px' }}>
-                    {arrepError}
-                  </p>
+                  <div className="form-alert-error" role="alert">
+                    <span>⚠️</span>
+                    <span>{arrepError}</span>
+                  </div>
                 )}
 
                 <div className="form-group">
@@ -602,9 +631,10 @@ export default function App() {
             
             <form onSubmit={handleLoginSubmit}>
               {loginError && (
-                <p style={{ color: 'var(--danger)', fontSize: '13px', background: 'var(--danger-light)', padding: '8px', borderRadius: '4px', marginBottom: '12px' }}>
-                  {loginError}
-                </p>
+                <div className="form-alert-error" role="alert">
+                  <span>⚠️</span>
+                  <span>{loginError}</span>
+                </div>
               )}
 
               <div className="form-group">
@@ -650,15 +680,17 @@ export default function App() {
             <p className="modal-description">Regístrese para poder realizar compras.</p>
             
             {regSuccess ? (
-               <div style={{ color: 'var(--success)', padding: '10px', fontWeight: 'bold' }}>
-                  {regSuccess}
+               <div className="form-alert-success" role="status">
+                  <span>✔</span>
+                  <span>{regSuccess}</span>
                </div>
             ) : (
                <form onSubmit={handleRegisterSubmit}>
                  {regError && (
-                   <p style={{ color: 'var(--danger)', fontSize: '13px', background: 'var(--danger-light)', padding: '8px', borderRadius: '4px', marginBottom: '12px' }}>
-                     {regError}
-                   </p>
+                   <div className="form-alert-error" role="alert">
+                     <span>⚠️</span>
+                     <span>{regError}</span>
+                   </div>
                  )}
 
                  <div className="form-group">
@@ -697,14 +729,14 @@ export default function App() {
                    />
                  </div>
 
-                 <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                 <div className="form-checkbox-group">
                    <input 
                      type="checkbox" 
                      id="consentimiento" 
                      checked={regConsent}
                      onChange={(e) => setRegConsent(e.target.checked)}
                    />
-                   <label htmlFor="consentimiento" style={{ fontSize: '13px' }}>Acepto el tratamiento de mis datos personales según la Ley 25.326</label>
+                   <label htmlFor="consentimiento">Acepto el tratamiento de mis datos personales según la Ley 25.326</label>
                  </div>
 
                  <div className="modal-actions">

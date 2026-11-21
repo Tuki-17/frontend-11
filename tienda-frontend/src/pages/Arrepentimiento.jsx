@@ -25,65 +25,72 @@ export default function Arrepentimiento() {
   };
 
   return (
-    <div className="arrepentimiento-container" style={{ padding: "20px", maxWidth: "500px", margin: "0 auto" }}>
-      <h2>Botón de Arrepentimiento</h2>
-      <p>Resolución 424/2020 - Derecho de revocación de compra.</p>
+    <div className="arrepentimiento-page-wrapper">
+      <div className="arrepentimiento-card">
+        <h2 className="modal-title">↩️ Botón de Arrepentimiento</h2>
+        <p className="modal-description">Resolución 424/2020 - Derecho de revocación de compra dentro de los 10 días corridos.</p>
 
-      {error && (
-        <p role="alert" style={{ color: "red" }}>
-          {error}
-        </p>
-      )}
-
-      {!ticket ? (
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "12px" }}>
-            <label htmlFor="email">Correo Electrónico</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{ width: "100%", padding: "8px" }}
-            />
+        {error && (
+          <div className="form-alert-error" role="alert">
+            <span>⚠️</span>
+            <span>{error}</span>
           </div>
+        )}
 
-          <div style={{ marginBottom: "12px" }}>
-            <label htmlFor="codigo_compra">Código de Compra</label>
-            <input
-              id="codigo_compra"
-              type="text"
-              value={codigoCompra}
-              onChange={(e) => setCodigoCompra(e.target.value)}
-              required
-              style={{ width: "100%", padding: "8px" }}
-            />
+        {!ticket ? (
+          <form onSubmit={handleSubmit} className="arrepentimiento-form">
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">Correo Electrónico</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="form-input"
+                placeholder="correo@ejemplo.com"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="codigo_compra" className="form-label">Código de Compra</label>
+              <input
+                id="codigo_compra"
+                type="text"
+                value={codigoCompra}
+                onChange={(e) => setCodigoCompra(e.target.value)}
+                required
+                className="form-input"
+                placeholder="CMP-XXXXXX"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="detalle" className="form-label">Motivo (Opcional)</label>
+              <textarea
+                id="detalle"
+                value={detalle}
+                onChange={(e) => setDetalle(e.target.value)}
+                rows="3"
+                className="form-input"
+                placeholder="Detalle brevemente el motivo..."
+                style={{ resize: "vertical" }}
+              />
+            </div>
+
+            <button type="submit" disabled={cargando} className="btn btn-arrepentimiento btn-full-mobile">
+              {cargando ? "Procesando..." : "Confirmar Revocación"}
+            </button>
+          </form>
+        ) : (
+          <div data-testid="ticket-revocacion" className="ticket-container">
+            <h3>Trámite de Revocación Iniciado</h3>
+            <p style={{ marginTop: "8px" }}>
+              Código de Trámite: <strong>{ticket.codigo_tramite}</strong>
+            </p>
           </div>
-
-          <div style={{ marginBottom: "12px" }}>
-            <label htmlFor="detalle">Motivo (Opcional)</label>
-            <textarea
-              id="detalle"
-              value={detalle}
-              onChange={(e) => setDetalle(e.target.value)}
-              rows="3"
-              style={{ width: "100%", padding: "8px" }}
-            />
-          </div>
-
-          <button type="submit" disabled={cargando} className="btn btn-primary">
-            {cargando ? "Procesando..." : "Confirmar Revocación"}
-          </button>
-        </form>
-      ) : (
-        <div data-testid="ticket-revocacion" style={{ marginTop: "20px" }}>
-          <h3>Trámite de Revocación Iniciado</h3>
-          <p>
-            Código de Trámite: <strong>{ticket.codigo_tramite}</strong>
-          </p>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
