@@ -1367,3 +1367,372 @@ body {
   line-height: 1.4;
 }
 
+/* ============================================
+   DARK MODE — Variables de color en modo oscuro
+   ============================================ */
+html.dark {
+  --black:        #f0f0f0;
+  --white:        #1a1a2e;
+  --bg:           #0f0f1a;
+  --card-bg:      #1e1e32;
+  --border-thick: 2.5px solid #444;
+  --border-card:  2px solid #444;
+  --shadow-card:  4px 4px 0px #000;
+  --shadow-hover: 6px 6px 0px #000;
+  --shadow-btn:   3px 3px 0px #000;
+  --text-muted:   #aaa;
+}
+
+html.dark body {
+  background-color: var(--bg);
+  color: var(--black);
+}
+
+html.dark .app-header,
+html.dark .info-banner,
+html.dark .app-footer {
+  border-color: #444;
+}
+
+html.dark .modal-content {
+  background-color: #1e1e32;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
+html.dark .modal-overlay {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+html.dark .form-input {
+  background-color: #2a2a42;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
+html.dark .form-input::placeholder {
+  color: #888;
+}
+
+html.dark .product-card {
+  background-color: #1e1e32;
+  border-color: #444;
+}
+
+html.dark .cart-drawer {
+  background-color: #1e1e32;
+  border-left-color: #444;
+}
+
+html.dark .notif-dropdown,
+html.dark .config-dropdown {
+  background-color: #1e1e32;
+  border-color: #555;
+}
+
+html.dark .notif-item:hover,
+html.dark .notif-item.notif-unread {
+  background-color: #252540;
+}
+
+html.dark .invoice-box {
+  background-color: #0d0d0d;
+  color: #ccc;
+  border-color: #444;
+}
+
+html.dark .ticket-container {
+  background-color: #0d0d0d;
+  border-color: #444;
+}
+
+html.dark .ticket-row {
+  border-bottom-color: #333;
+  color: #ddd;
+}
+
+html.dark .btn-secondary {
+  background-color: #2a2a42;
+  color: #f0f0f0;
+  border-color: #555;
+}
+
+html.dark .btn-secondary:hover {
+  background-color: #3a3a55;
+}
+
+html.dark .catalogo-title {
+  color: var(--lime);
+}
+
+html.dark .nav-user-greeting {
+  color: #ccc;
+}
+
+html.dark .info-banner {
+  background-color: #1e1e32;
+  color: #ccc;
+}
+
+/* ============================================
+   BUSCADOR DE CATÁLOGO
+   ============================================ */
+.search-bar-container {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 480px;
+  padding: 10px 16px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  border: var(--border-thick);
+  border-radius: var(--r-sm);
+  background-color: var(--white);
+  color: var(--black);
+  box-shadow: var(--shadow-btn);
+  outline: none;
+  transition: box-shadow 0.15s ease;
+}
+
+.search-input:focus {
+  box-shadow: 4px 4px 0px var(--black);
+}
+
+.search-input::placeholder {
+  color: #999;
+  font-size: 14px;
+}
+
+html.dark .search-input {
+  background-color: #2a2a42;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
+html.dark .search-input::placeholder {
+  color: #666;
+}
+
+.search-no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ============================================
+   MENÚ DE CONFIGURACIÓN (Engranaje)
+   ============================================ */
+.config-menu-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.config-btn {
+  background-color: var(--white);
+  border: var(--border-thick);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-btn);
+  cursor: pointer;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  min-width: 42px;
+  min-height: 42px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.config-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.config-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--black);
+}
+
+html.dark .config-btn {
+  background-color: #2a2a42;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
+.config-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background-color: var(--white);
+  border: var(--border-thick);
+  border-radius: var(--r-card);
+  box-shadow: 6px 6px 0px var(--black);
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.config-dropdown-title {
+  padding: 12px 16px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background-color: var(--cyan);
+  border-bottom: var(--border-thick);
+  color: var(--black);
+}
+
+html.dark .config-dropdown-title {
+  background-color: #1e1e32;
+  color: var(--cyan);
+  border-bottom-color: #444;
+}
+
+.config-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 12px;
+}
+
+.config-row-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  flex: 1;
+}
+
+.config-row-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: #888;
+}
+
+/* Toggle Switch */
+.dark-mode-toggle {
+  flex-shrink: 0;
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background-color: #ccc;
+  border: 2px solid var(--black);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  padding: 0;
+}
+
+.dark-mode-toggle--on {
+  background-color: var(--cyan);
+}
+
+.dark-mode-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background-color: var(--black);
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+  display: block;
+}
+
+.dark-mode-toggle--on .dark-mode-toggle-thumb {
+  transform: translateX(22px);
+}
+
+/* ============================================
+   BOTONES DE PDF / IMPRIMIR COMPROBANTE
+   ============================================ */
+.btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border-radius: var(--r-pill);
+  border: var(--border-thick);
+  background-color: var(--success-light);
+  color: var(--success);
+  box-shadow: var(--shadow-btn);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn-pdf:hover {
+  background-color: #c6f6e1;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px var(--black);
+}
+
+.btn-pdf:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--black);
+}
+
+/* Estilos de impresión — solo se aplica al imprimir */
+@media print {
+  body > * {
+    display: none !important;
+  }
+
+  .print-ticket {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 32px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    color: #000;
+    background: #fff;
+  }
+
+  .print-ticket h2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  .print-ticket table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+  }
+
+  .print-ticket td {
+    padding: 4px 0;
+    border-bottom: 1px dashed #ccc;
+  }
+
+  .print-ticket .legal-note {
+    font-size: 10px;
+    color: #555;
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+}
+

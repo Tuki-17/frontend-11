@@ -6,13 +6,17 @@ import toast, { Toaster } from 'react-hot-toast';
 import ActualizacionDisponible from './components/ActualizacionDisponible';
 import { useConectado } from './hooks/useConectado';
 import { NotificacionesBell } from './components/NotificacionesBell';
+import { ConfigMenu } from './components/ConfigMenu';
+import { useDarkMode } from './hooks/useDarkMode';
 
 export default function App() {
   const conectado = useConectado();
+  const { isDark, toggleDark } = useDarkMode();
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [lento, setLento] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
 
   // Estados del Carrito
   const [cart, setCart] = useState([]);
@@ -247,7 +251,36 @@ export default function App() {
     setRegSuccess(null);
   };
 
+  /**
+   * Imprime el comprobante de COMPRA usando window.print()
+   * con un div oculto .print-ticket que solo es visible al imprimir.
+   */
+  const imprimirComprobanteCompra = () => {
+    const ticket = document.getElementById('print-ticket-compra');
+    if (!ticket) return;
+    ticket.style.display = 'block';
+    window.print();
+    ticket.style.display = 'none';
+  };
+
+  /**
+   * Imprime el comprobante de REVOCACIÓN/ARREPENTIMIENTO.
+   */
+  const imprimirComprobanteRevocacion = () => {
+    const ticket = document.getElementById('print-ticket-revocacion');
+    if (!ticket) return;
+    ticket.style.display = 'block';
+    window.print();
+    ticket.style.display = 'none';
+  };
+
   const totalCarrito = cart.reduce((sum, item) => sum + item.precio_final * item.cantidad, 0);
+
+  // Buscador reactivo — filtra sobre el estado `productos` en tiempo real
+  const productosFiltrados = productos.filter((p) =>
+    p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+    (p.descripcion && p.descripcion.toLowerCase().includes(busqueda.toLowerCase()))
+  );
 
   return (
     <div className="app-container">
@@ -284,6 +317,7 @@ export default function App() {
               )}
             </button>
           )}
+          <ConfigMenu isDark={isDark} onToggleDark={toggleDark} />
           <button 
             className="mobile-menu-toggle-btn"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -338,6 +372,7 @@ export default function App() {
               )}
             </button>
           )}
+          <ConfigMenu isDark={isDark} onToggleDark={toggleDark} />
         </nav>
       </header>
 
@@ -377,7 +412,32 @@ export default function App() {
               <span className="badge-pill badge-yellow">⚡ Power Up</span>
             </div>
           </div>
-          
+
+          {/* Buscador dinámico */}
+          {!cargando && !error && (
+            <div className="search-bar-container">
+              <input
+                type="search"
+                className="search-input"
+                placeholder="🔍 Buscar productos por nombre o descripción..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                aria-label="Buscar productos"
+              />
+              {busqueda && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  style={{ padding: '8px 14px', fontSize: '13px' }}
+                  onClick={() => setBusqueda('')}
+                  aria-label="Limpiar búsqueda"
+                >
+                  ✕ Limpiar
+                </button>
+              )}
+            </div>
+          )}
+
           {cargando && (
             <p className="loading-text">
               {lento ? "Despertando el servidor, la primera visita puede tardar un minuto…" : "Cargando productos…"}
@@ -386,15 +446,23 @@ export default function App() {
           {error && <div className="error-box">⚠️ Error: {error}</div>}
           
           {!cargando && !error && (
-            <div className="product-grid">
-              {productos.map((prod) => (
-                <ProductCard 
-                  key={prod.id} 
-                  producto={prod} 
-                  onAddToCart={handleAddToCart}
-                />
-              ))}
-            </div>
+            productosFiltrados.length > 0 ? (
+              <div className="product-grid">
+                {productosFiltrados.map((prod) => (
+                  <ProductCard 
+                    key={prod.id} 
+                    producto={prod} 
+                    onAddToCart={handleAddToCart}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="search-no-results">
+                {busqueda
+                  ? `No se encontraron productos para "${busqueda}".`
+                  : 'No hay productos disponibles en este momento.'}
+              </div>
+            )
           )}
         </main>
       )}
@@ -528,14 +596,57 @@ export default function App() {
             </div>
 
             <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-pdf"
+                onClick={imprimirComprobanteCompra}
+                aria-label="Descargar Comprobante de Compra PDF"
+              >
+                📄 Descargar Comprobante de Compra (PDF)
+              </button>
               <button className="btn btn-primary" onClick={cerrarModales}>Entendido / Cerrar</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal: Botón de Arrepentimiento (Resolución 424/2020) */}
-      {isArrepentimientoOpen && (
+      {/* Div oculto — comprobante de compra para window.print() */}
+      {compraExitosa && (
+        <div id="print-ticket-compra" className="print-ticket" style={{ display: 'none' }}>
+          <h2>TRAMPANTOJOS BOUTIQUE S.R.L.</h2>
+          <p>COMPROBANTE DE COMPRA — Ley 24.240</p>
+          <hr style={{ margin: '12px 0' }} />
+          <table>
+            <tbody>
+              <tr><td><strong>Código de Compra:</strong></td><td>{compraExitosa.codigoCompra}</td></tr>
+              <tr><td><strong>Fecha:</strong></td><td>{compraExitosa.fecha}</td></tr>
+              <tr><td><strong>Email:</strong></td><td>{compraExitosa.email}</td></tr>
+            </tbody>
+          </table>
+          <p style={{ marginTop: '12px' }}><strong>Detalle de Productos:</strong></p>
+          <table>
+            <tbody>
+              {compraExitosa.items.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.nombre} (x{item.cantidad})</td>
+                  <td style={{ textAlign: 'right' }}>${(item.precio_final * item.cantidad).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                </tr>
+              ))}
+              <tr>
+                <td><strong>TOTAL:</strong></td>
+                <td style={{ textAlign: 'right' }}><strong>${compraExitosa.total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="legal-note">
+            <p>* Financiación: 3 cuotas sin interés | CFT: 0,00% | TNA: 0,00%</p>
+            <p>* Derecho de Revocación (Art. 34 Ley 24.240): Usted dispone de 10 días corridos para revocar esta compra desde la fecha de recepción.</p>
+            <p>Trampantojos Boutique S.R.L. — Todos los derechos reservados © 2026</p>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Botón de Arrepentimiento (Resolución 424/2020) */}      {isArrepentimientoOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3 className="modal-title">↩️ Botón de Arrepentimiento</h3>
@@ -623,6 +734,14 @@ export default function App() {
                 </p>
 
                 <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="btn-pdf"
+                    onClick={imprimirComprobanteRevocacion}
+                    aria-label="Descargar Comprobante de Revocación PDF"
+                  >
+                    📄 Descargar Comprobante de Revocación (PDF)
+                  </button>
                   <button className="btn btn-primary" onClick={cerrarModales}>Cerrar Ventana</button>
                 </div>
               </div>
@@ -631,8 +750,29 @@ export default function App() {
         </div>
       )}
 
-      {/* Modal de Inicio de Sesión */}
-      {isLoginOpen && (
+      {/* Div oculto — comprobante de revocación para window.print() */}
+      {revocacionTicket && (
+        <div id="print-ticket-revocacion" className="print-ticket" style={{ display: 'none' }}>
+          <h2>TRAMPANTOJOS BOUTIQUE S.R.L.</h2>
+          <p>COMPROBANTE DE REVOCACIÓN — Art. 34 Ley 24.240 / Res. 424/2020</p>
+          <hr style={{ margin: '12px 0' }} />
+          <table>
+            <tbody>
+              <tr><td><strong>Código de Trámite:</strong></td><td>{revocacionTicket.codigo_tramite}</td></tr>
+              <tr><td><strong>Código de Compra:</strong></td><td>{revocacionTicket.codigo_compra}</td></tr>
+              <tr><td><strong>Email:</strong></td><td>{revocacionTicket.email}</td></tr>
+              <tr><td><strong>Fecha Solicitud:</strong></td><td>{revocacionTicket.fecha}</td></tr>
+            </tbody>
+          </table>
+          <div className="legal-note">
+            <p>* De acuerdo con el Art. 34 de la Ley 24.240 y la Res. 424/2020, el proveedor no podrá cobrarle ningún cargo adicional ni penalidad por el ejercicio de este derecho.</p>
+            <p>* Conserve este comprobante como constancia de su solicitud de revocación.</p>
+            <p>Trampantojos Boutique S.R.L. — Todos los derechos reservados © 2026</p>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Inicio de Sesión */}      {isLoginOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3 className="modal-title">🔑 Iniciar Sesión</h3>
