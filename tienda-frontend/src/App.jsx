@@ -5,6 +5,7 @@ import { AdminPanel } from './components/AdminPanel';
 import toast, { Toaster } from 'react-hot-toast';
 import ActualizacionDisponible from './components/ActualizacionDisponible';
 import { useConectado } from './hooks/useConectado';
+import { NotificacionesBell } from './components/NotificacionesBell';
 
 export default function App() {
   const conectado = useConectado();
@@ -266,6 +267,9 @@ export default function App() {
 
         {/* Controles para móvil */}
         <div className="mobile-header-controls">
+          {user && (
+            <NotificacionesBell token={localStorage.getItem('access_token')} userRole={user.rol} />
+          )}
           {(!user || user.rol !== 'admin') && (
             <button 
               className="btn btn-secondary mobile-quick-cart-btn" 
@@ -291,6 +295,11 @@ export default function App() {
         </div>
 
         <nav className={`nav-actions ${isMobileMenuOpen ? 'nav-actions-open' : ''}`}>
+          {user && (
+            <div className="nav-bell-desktop">
+              <NotificacionesBell token={localStorage.getItem('access_token')} userRole={user.rol} />
+            </div>
+          )}
           {!user ? (
             <>
               <button className="btn btn-secondary" onClick={() => { setIsLoginOpen(true); setIsMobileMenuOpen(false); }}>

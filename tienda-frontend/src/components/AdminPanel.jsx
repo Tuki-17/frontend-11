@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { createProducto, updateProducto } from '../services/api';
+import { createProducto, updateProducto, deleteProducto } from '../services/api';
 import toast from 'react-hot-toast';
 
 export const AdminPanel = ({ productos, setProductos, token }) => {
   const [editingId, setEditingId] = useState(null);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [formData, setFormData] = useState({
     nombre: '',
     precio_final: 0,
@@ -75,6 +77,21 @@ export const AdminPanel = ({ productos, setProductos, token }) => {
     }
   };
 
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await deleteProducto(token, productToDelete.id);
+      setProductos(productos.filter(p => p.id !== productToDelete.id));
+      toast.success("Producto eliminado exitosamente");
+      setProductToDelete(null);
+    } catch (error) {
+      toast.error(error.message || "Error al eliminar producto");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   return (
     <div style={{ marginTop: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -118,12 +135,61 @@ export const AdminPanel = ({ productos, setProductos, token }) => {
               <td style={{ padding: '8px' }}>${p.precio_final}</td>
               <td style={{ padding: '8px' }}>{p.stock}</td>
               <td style={{ padding: '8px' }}>
-                <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '12px' }} onClick={() => handleEdit(p)}>✏️ Editar</button>
+                <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '12px', marginRight: '6px' }} onClick={() => handleEdit(p)}>✏️ Editar</button>
+                <button className="btn btn-danger" style={{ padding: '4px 8px', fontSize: '12px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={() => setProductToDelete(p)}>🗑️ Eliminar</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {productToDelete && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: '#fff',
+            padding: '24px',
+            borderRadius: '8px',
+            maxWidth: '400px',
+            width: '90%',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h4 style={{ margin: '0 0 12px 0', color: '#1f2937' }}>Confirmar Eliminación</h4>
+            <p style={{ margin: '0 0 20px 0', color: '#4b5563' }}>
+              ¿Estás seguro de que deseas eliminar el producto <strong>{productToDelete.nombre}</strong>?
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                disabled={deleteLoading}
+                onClick={() => setProductToDelete(null)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                style={{ background: '#dc2626', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}
+                disabled={deleteLoading}
+                onClick={handleConfirmDelete}
+              >
+                {deleteLoading ? 'Eliminando...' : 'Eliminar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

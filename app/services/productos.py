@@ -73,3 +73,27 @@ def actualizar_producto(
     db.commit()
     db.refresh(db_producto)
     return db_producto
+
+
+def eliminar_producto(db: Session, producto_id: int) -> bool:
+    """
+    Elimina un producto existente de la base de datos.
+    Si tiene restricciones de clave foránea con pedidos antiguos (items_pedido),
+    aplica borrado lógico / desactivación para preservar la integridad referencial.
+    """
+    from app.models import ItemPedido
+    db_producto = db.query(ProductoModel).filter(ProductoModel.id == producto_id).first()
+    if not db_producto:
+        return False
+    
+    tiene_items = db.query(ItemPedido).filter(ItemPedido.producto_id == producto_id).first() is not None
+    if tiene_items:
+        db_producto.stock = 0
+        if not db_producto.nombre.startswith("[Eliminado]"):
+            db_producto.nombre = f"[Eliminado] {db_producto.nombre}"
+        db.commit()
+    else:
+        db.delete(db_producto)
+        db.commit()
+    return True
+

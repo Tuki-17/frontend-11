@@ -42,6 +42,20 @@ def actualizar_producto(
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return producto
 
+
+@router.delete("/{producto_id}")
+def eliminar_producto(
+    producto_id: int,
+    db: Session = Depends(get_db),
+    _: None = Depends(require_admin),
+):
+    """Elimina un producto existente. Requiere rol admin."""
+    eliminado = productos_service.eliminar_producto(db, producto_id)
+    if not eliminado:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    return {"mensaje": "Producto eliminado exitosamente.", "id": producto_id}
+
+
 @router.post("/{producto_id}/imagen", status_code=201)
 def subir_imagen(
     producto_id: int,

@@ -13,7 +13,7 @@ from app.core.config import settings
 from app.database import engine, Base, SessionLocal
 from app.dependencies import get_db
 from app.models import Producto as ProductoModel, Pedido, ItemPedido
-from app.routers import productos, auth, pedidos
+from app.routers import productos, auth, pedidos, notificaciones
 
 # Crear las tablas en la base de datos si no existen
 Base.metadata.create_all(bind=engine)
@@ -70,6 +70,7 @@ app.mount("/demo", StaticConCache(directory="app/static/demo"), name="demo")
 app.include_router(productos.router)
 app.include_router(auth.router)
 app.include_router(pedidos.router)
+app.include_router(notificaciones.router)
 
 
 # --- Endpoint de arrepentimiento (Resolución 424/2020) ---

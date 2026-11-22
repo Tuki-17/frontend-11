@@ -125,4 +125,32 @@ export const updateProducto = async (token, id, producto) => {
         throw new Error(err.detail || 'Error al actualizar producto');
     }
     return await response.json();
-};
+};
+
+export const deleteProducto = async (token, id) => {
+    const response = await fetch(`${API_URL}/productos/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || 'Error al eliminar producto');
+    }
+    return await response.json();
+};
+
+export const getNotificaciones = async (token) => {
+    const response = await fetch(`${API_URL}/notificaciones`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || 'Error al obtener notificaciones');
+    }
+    return await response.json();
+};
+
