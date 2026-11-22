@@ -95,11 +95,6 @@ export function ProductCard({ producto, onAddToCart }) {
           PTF: ${producto.precio_final.toLocaleString('es-AR', { minimumFractionDigits: 2 })} | CFT: 0,00% | TNA: 0,00%
         </div>
 
-        <div className="warranty-info">
-          <span>🛡️ Garantía:</span>
-          <strong>{producto.garantia_meses > 0 ? `${producto.garantia_meses} meses` : 'Legal (3 meses)'}</strong>
-        </div>
-
         <div className="stock-info">
           <span>Stock: {producto.stock} u.</span>
           <span>Sujeto a disponibilidad</span>

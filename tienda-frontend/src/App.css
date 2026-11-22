@@ -1,1 +1,16 @@
-/* App.css — limpio, todo el diseño está en index.css */
+/* App.css — Estilos complementarios */
+.card-footer {
+  background-color: transparent;
+}
+
+.cash-price {
+  color: var(--black);
+}
+
+html.dark .card-footer {
+  background-color: transparent;
+}
+
+html.dark .cash-price {
+  color: #f0f0f0;
+}
