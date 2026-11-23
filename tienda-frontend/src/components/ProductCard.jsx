@@ -61,7 +61,7 @@ export function ProductCard({ producto, onAddToCart }) {
   const sinStock = producto.stock <= 0;
 
   return (
-    <div className="product-card bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:shadow-lg transition-all duration-300">
+    <div className="product-card bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-amber-400/60 dark:hover:border-indigo-500/60 transition-colors duration-300 shadow-sm hover:shadow-md">
       {/* Imagen con badge encima */}
       <div className="card-image-wrapper">
         <img

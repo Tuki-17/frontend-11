@@ -254,25 +254,16 @@ export default function App() {
 
   /**
    * Imprime el comprobante de COMPRA usando window.print()
-   * con un div oculto .print-ticket que solo es visible al imprimir.
    */
   const imprimirComprobanteCompra = () => {
-    const ticket = document.getElementById('print-ticket-compra');
-    if (!ticket) return;
-    ticket.style.display = 'block';
     window.print();
-    ticket.style.display = 'none';
   };
 
   /**
    * Imprime el comprobante de REVOCACIÓN/ARREPENTIMIENTO.
    */
   const imprimirComprobanteRevocacion = () => {
-    const ticket = document.getElementById('print-ticket-revocacion');
-    if (!ticket) return;
-    ticket.style.display = 'block';
     window.print();
-    ticket.style.display = 'none';
   };
 
   const totalCarrito = cart.reduce((sum, item) => sum + item.precio_final * item.cantidad, 0);
@@ -294,7 +285,7 @@ export default function App() {
         },
       }} />
       {/* Encabezado Principal */}
-      <header className="app-header">
+      <header className="app-header print:hidden">
         <div className="brand-section">
           <h1 className="brand-title">🍰 Trampantojos Boutique</h1>
           <span className="brand-subtitle">Pastelería de ilusión óptica · Información transparente (Ley 24.240)</span>
@@ -379,7 +370,7 @@ export default function App() {
       </header>
 
       {/* Banner Legal */}
-      <section className="info-banner">
+      <section className="info-banner print:hidden">
         <h3>ℹ️ Transparencia Comercial (Ley 24.240)</h3>
         <p>
           De conformidad con el <strong>Art. 4 de la Ley 24.240</strong>, todos los precios son finales en ARS.
@@ -390,13 +381,13 @@ export default function App() {
 
       {/* Vistas basadas en roles */}
       {user?.rol === 'admin' ? (
-        <main style={{ flexGrow: 1, padding: '20px', background: 'var(--white)', borderRadius: 'var(--r-card)', border: 'var(--border-thick)' }}>
+        <main className="print:hidden" style={{ flexGrow: 1, padding: '20px', background: 'var(--white)', borderRadius: 'var(--r-card)', border: 'var(--border-thick)' }}>
           <h2 className="catalogo-title">🛡️ Panel de Control Administrador</h2>
           <p style={{ marginTop: '10px' }}>Bienvenido al dashboard exclusivo para administradores.</p>
           <AdminPanel productos={productos} setProductos={setProductos} token={localStorage.getItem('access_token')} />
         </main>
       ) : user?.rol === 'customer' ? (
-        <main style={{ flexGrow: 1, padding: '20px', background: 'var(--white)', borderRadius: 'var(--r-card)', border: 'var(--border-thick)', marginBottom: '20px' }}>
+        <main className="print:hidden" style={{ flexGrow: 1, padding: '20px', background: 'var(--white)', borderRadius: 'var(--r-card)', border: 'var(--border-thick)', marginBottom: '20px' }}>
           <h2 className="catalogo-title">🛍️ Panel del Cliente</h2>
           <p style={{ marginTop: '10px' }}>Aquí puedes ver tu historial de pedidos, tus métodos de pago y gestionar tu cuenta.</p>
         </main>
@@ -404,7 +395,7 @@ export default function App() {
 
       {/* Catálogo (Solo si no es admin) */}
       {user?.rol !== 'admin' && (
-        <main style={{ flexGrow: 1 }}>
+        <main className="print:hidden" style={{ flexGrow: 1 }}>
           <div className="catalogo-header">
             <h2 className="catalogo-title">🍭 Nuestras Creaciones Dulces</h2>
             <div className="vibe-tags">
@@ -602,9 +593,9 @@ export default function App() {
                 type="button"
                 className="btn-pdf"
                 onClick={imprimirComprobanteCompra}
-                aria-label="Descargar Comprobante de Compra PDF"
+                aria-label="Imprimir o Guardar Comprobante de Compra PDF"
               >
-                📄 Descargar Comprobante de Compra (PDF)
+                🖨️ Imprimir / Guardar Comprobante (PDF)
               </button>
               <button className="btn btn-primary" onClick={cerrarModales}>Entendido / Cerrar</button>
             </div>
@@ -614,36 +605,47 @@ export default function App() {
 
       {/* Div oculto — comprobante de compra para window.print() */}
       {compraExitosa && (
-        <div id="print-ticket-compra" className="print-ticket" style={{ display: 'none' }}>
-          <h2>TRAMPANTOJOS BOUTIQUE S.R.L.</h2>
-          <p>COMPROBANTE DE COMPRA — Ley 24.240</p>
+        <div id="print-ticket-compra" className="print-ticket print:block">
+          <h2>🍰 Tienda Trampantojo</h2>
+          <p><strong>TRAMPANTOJOS BOUTIQUE S.R.L.</strong></p>
+          <p>COMPROBANTE DE COMPRA — Ley 24.240 (Defensa del Consumidor)</p>
           <hr style={{ margin: '12px 0' }} />
           <table>
             <tbody>
-              <tr><td><strong>Código de Compra:</strong></td><td>{compraExitosa.codigoCompra}</td></tr>
-              <tr><td><strong>Fecha:</strong></td><td>{compraExitosa.fecha}</td></tr>
-              <tr><td><strong>Email:</strong></td><td>{compraExitosa.email}</td></tr>
+              <tr><td><strong>Código de Trámite / Compra:</strong></td><td>{compraExitosa.codigoCompra}</td></tr>
+              <tr><td><strong>Fecha y Hora:</strong></td><td>{compraExitosa.fecha}</td></tr>
+              <tr><td><strong>Email del Comprador:</strong></td><td>{compraExitosa.email}</td></tr>
             </tbody>
           </table>
-          <p style={{ marginTop: '12px' }}><strong>Detalle de Productos:</strong></p>
+          <p style={{ marginTop: '12px' }}><strong>Desglose de Ítems:</strong></p>
           <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th style={{ textAlign: 'center' }}>Cant.</th>
+                <th style={{ textAlign: 'right' }}>Precio Unit.</th>
+                <th style={{ textAlign: 'right' }}>Subtotal</th>
+              </tr>
+            </thead>
             <tbody>
               {compraExitosa.items.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.nombre} (x{item.cantidad})</td>
+                  <td>{item.nombre}</td>
+                  <td style={{ textAlign: 'center' }}>{item.cantidad}</td>
+                  <td style={{ textAlign: 'right' }}>${item.precio_final.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
                   <td style={{ textAlign: 'right' }}>${(item.precio_final * item.cantidad).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
                 </tr>
               ))}
               <tr>
-                <td><strong>TOTAL:</strong></td>
+                <td colSpan="3" style={{ textAlign: 'right' }}><strong>TOTAL FINAL:</strong></td>
                 <td style={{ textAlign: 'right' }}><strong>${compraExitosa.total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</strong></td>
               </tr>
             </tbody>
           </table>
           <div className="legal-note">
-            <p>* Financiación: 3 cuotas sin interés | CFT: 0,00% | TNA: 0,00%</p>
-            <p>* Derecho de Revocación (Art. 34 Ley 24.240): Usted dispone de 10 días corridos para revocar esta compra desde la fecha de recepción.</p>
-            <p>Trampantojos Boutique S.R.L. — Todos los derechos reservados © 2026</p>
+            <p>* Financiación: 3 cuotas sin interés | Costo Financiero Total (CFT): 0,00% | TNA: 0,00%</p>
+            <p>* Derecho de Revocación (Art. 34 Ley 24.240 de Defensa del Consumidor y Res. 424/2020): Usted dispone de 10 días corridos para revocar esta compra desde la fecha de recepción del producto.</p>
+            <p>Tienda Trampantojo · Trampantojos Boutique S.R.L. — Todos los derechos reservados © 2026</p>
           </div>
         </div>
       )}
@@ -740,9 +742,9 @@ export default function App() {
                     type="button"
                     className="btn-pdf"
                     onClick={imprimirComprobanteRevocacion}
-                    aria-label="Descargar Comprobante de Revocación PDF"
+                    aria-label="Imprimir o Guardar Comprobante de Revocación PDF"
                   >
-                    📄 Descargar Comprobante de Revocación (PDF)
+                    🖨️ Imprimir / Guardar Comprobante (PDF)
                   </button>
                   <button className="btn btn-primary" onClick={cerrarModales}>Cerrar Ventana</button>
                 </div>
@@ -754,22 +756,23 @@ export default function App() {
 
       {/* Div oculto — comprobante de revocación para window.print() */}
       {revocacionTicket && (
-        <div id="print-ticket-revocacion" className="print-ticket" style={{ display: 'none' }}>
-          <h2>TRAMPANTOJOS BOUTIQUE S.R.L.</h2>
-          <p>COMPROBANTE DE REVOCACIÓN — Art. 34 Ley 24.240 / Res. 424/2020</p>
+        <div id="print-ticket-revocacion" className="print-ticket print:block">
+          <h2>🍰 Tienda Trampantojo</h2>
+          <p><strong>TRAMPANTOJOS BOUTIQUE S.R.L.</strong></p>
+          <p>COMPROBANTE DE REVOCACIÓN / ARREPENTIMIENTO — Art. 34 Ley 24.240 / Res. 424/2020</p>
           <hr style={{ margin: '12px 0' }} />
           <table>
             <tbody>
               <tr><td><strong>Código de Trámite:</strong></td><td>{revocacionTicket.codigo_tramite}</td></tr>
               <tr><td><strong>Código de Compra:</strong></td><td>{revocacionTicket.codigo_compra}</td></tr>
-              <tr><td><strong>Email:</strong></td><td>{revocacionTicket.email}</td></tr>
-              <tr><td><strong>Fecha Solicitud:</strong></td><td>{revocacionTicket.fecha}</td></tr>
+              <tr><td><strong>Email del Comprador:</strong></td><td>{revocacionTicket.email}</td></tr>
+              <tr><td><strong>Fecha y Hora de Solicitud:</strong></td><td>{revocacionTicket.fecha}</td></tr>
             </tbody>
           </table>
           <div className="legal-note">
-            <p>* De acuerdo con el Art. 34 de la Ley 24.240 y la Res. 424/2020, el proveedor no podrá cobrarle ningún cargo adicional ni penalidad por el ejercicio de este derecho.</p>
-            <p>* Conserve este comprobante como constancia de su solicitud de revocación.</p>
-            <p>Trampantojos Boutique S.R.L. — Todos los derechos reservados © 2026</p>
+            <p>* De acuerdo con el Art. 34 de la Ley 24.240 de Defensa del Consumidor y la Res. 424/2020, el proveedor no podrá cobrarle ningún cargo adicional ni penalidad por el ejercicio de este derecho.</p>
+            <p>* Conserve este comprobante como constancia legal de su solicitud de revocación.</p>
+            <p>Tienda Trampantojo · Trampantojos Boutique S.R.L. — Todos los derechos reservados © 2026</p>
           </div>
         </div>
       )}
@@ -903,7 +906,7 @@ export default function App() {
       )}
 
       {/* Pie de Página Legal Obligatorio en Argentina */}
-      <footer className="app-footer">
+      <footer className="app-footer print:hidden">
         <div className="footer-compliance-links">
           <a 
             href="https://www.argentina.gob.ar/produccion/defensadelconsumidor" 

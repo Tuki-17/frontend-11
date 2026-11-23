@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 /**
- * Componente contenedor de fondo con efecto "Spotlight" interactivo que sigue el cursor del mouse.
- * - Modo Claro: halo suave ámbar/naranja (rgba(251, 146, 60, 0.08))
- * - Modo Oscuro: halo suave azul/índigo (rgba(99, 102, 241, 0.12))
- * - Fondo base: bg-gradient-to-br from-amber-50/40 via-slate-50 to-orange-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-zinc-950 min-h-screen
+ * Componente contenedor de fondo con efecto "Spotlight" interactivo estilo X (Twitter).
+ * - Modo Claro: radial-gradient(600px at ${x}px ${y}px, rgba(234, 88, 12, 0.12), transparent 80%)
+ * - Modo Oscuro: radial-gradient(600px at ${x}px ${y}px, rgba(99, 102, 241, 0.15), transparent 80%)
+ * - Fondo base: bg-gradient-to-br from-amber-50/60 via-orange-50/30 to-slate-100 dark:from-slate-950 dark:via-zinc-900 dark:to-slate-900 min-h-screen text-slate-900 dark:text-slate-100
  * - pointer-events-none en el halo para no bloquear interacciones
  */
 export function BackgroundSpotlight({ children, isDark }) {
@@ -27,19 +27,19 @@ export function BackgroundSpotlight({ children, isDark }) {
   };
 
   const haloColor = isDark
-    ? 'rgba(99, 102, 241, 0.12)'
-    : 'rgba(251, 146, 60, 0.08)';
+    ? 'rgba(99, 102, 241, 0.15)'
+    : 'rgba(234, 88, 12, 0.12)';
 
   return (
     <div
-      className="bg-gradient-to-br from-amber-50/40 via-slate-50 to-orange-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-zinc-950 min-h-screen relative overflow-hidden background-spotlight-container"
+      className="bg-gradient-to-br from-amber-50/60 via-orange-50/30 to-slate-100 dark:from-slate-950 dark:via-zinc-900 dark:to-slate-900 min-h-screen text-slate-900 dark:text-slate-100 relative overflow-hidden background-spotlight-container"
       onMouseMove={handleContainerMouseMove}
     >
-      {/* Destello de luz sutil en forma de gradiente radial */}
+      {/* Destello de luz interactivo estilo X (Twitter) */}
       <div
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300 spotlight-halo"
         style={{
-          background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, ${haloColor}, transparent 80%)`,
+          background: `radial-gradient(600px at ${mousePos.x}px ${mousePos.y}px, ${haloColor}, transparent 80%)`,
         }}
         aria-hidden="true"
       />

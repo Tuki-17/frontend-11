@@ -1711,47 +1711,101 @@ html.dark .config-dropdown-title {
   box-shadow: 1px 1px 0px var(--black);
 }
 
-/* Estilos de impresión — solo se aplica al imprimir */
+/* Pantalla: oculta los comprobantes de impresión */
+@media screen {
+  .print-ticket,
+  .print\:block {
+    display: none !important;
+  }
+}
+
+/* Impresión: muestra SOLO el comprobante y oculta navegación, modales y botones */
 @media print {
-  body > * {
+  .print\:hidden,
+  .print-hidden,
+  header,
+  footer,
+  nav,
+  main,
+  button,
+  .app-header,
+  .app-footer,
+  .info-banner,
+  .modal-overlay,
+  .vibe-tags,
+  .search-container,
+  .spotlight-halo {
     display: none !important;
   }
 
-  .print-ticket {
+  html,
+  body,
+  #root,
+  .background-spotlight-container {
+    background: #ffffff !important;
+    color: #000000 !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .print-ticket,
+  .print\:block {
     display: block !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 32px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
-    color: #000;
-    background: #fff;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 650px !important;
+    margin: 20px auto !important;
+    padding: 24px !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 13px !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+    border: 1px solid #000000 !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
   }
 
   .print-ticket h2 {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 16px;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    margin-bottom: 6px !important;
+    color: #000000 !important;
+  }
+
+  .print-ticket p {
+    margin: 4px 0 !important;
+    color: #000000 !important;
   }
 
   .print-ticket table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 12px 0;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 12px 0 !important;
   }
 
+  .print-ticket th,
   .print-ticket td {
-    padding: 4px 0;
-    border-bottom: 1px dashed #ccc;
+    padding: 6px 4px !important;
+    border-bottom: 1px dashed #ccc !important;
+    color: #000000 !important;
+    font-size: 12px !important;
+  }
+
+  .print-ticket th {
+    text-align: left !important;
+    font-weight: bold !important;
+    border-bottom: 1px solid #000000 !important;
   }
 
   .print-ticket .legal-note {
-    font-size: 10px;
-    color: #555;
-    margin-top: 20px;
-    line-height: 1.6;
+    font-size: 10px !important;
+    color: #444444 !important;
+    margin-top: 16px !important;
+    line-height: 1.5 !important;
+    border-top: 1px solid #000000 !important;
+    padding-top: 8px !important;
   }
 }
 

@@ -4,7 +4,7 @@ import React from 'react';
 import { BackgroundSpotlight } from './BackgroundSpotlight';
 
 describe('BackgroundSpotlight', () => {
-  it('renderiza children y aplica el halo en modo claro por defecto', () => {
+  it('renderiza children y aplica el halo en modo claro por defecto estilo X', () => {
     const { container } = render(
       <BackgroundSpotlight isDark={false}>
         <div>Contenido de Prueba</div>
@@ -16,7 +16,7 @@ describe('BackgroundSpotlight', () => {
     const halo = container.querySelector('.spotlight-halo');
     expect(halo).toBeInTheDocument();
     expect(halo).toHaveClass('pointer-events-none');
-    expect(halo.style.background).toContain('rgba(251, 146, 60, 0.08)');
+    expect(halo.style.background).toContain('rgba(234, 88, 12, 0.12)');
   });
 
   it('aplica el halo índigo en modo oscuro', () => {
@@ -27,7 +27,7 @@ describe('BackgroundSpotlight', () => {
     );
 
     const halo = container.querySelector('.spotlight-halo');
-    expect(halo.style.background).toContain('rgba(99, 102, 241, 0.12)');
+    expect(halo.style.background).toContain('rgba(99, 102, 241, 0.15)');
   });
 
   it('actualiza la posición del gradiente al mover el mouse', () => {
