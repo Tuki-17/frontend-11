@@ -27,7 +27,19 @@ describe('BackgroundSpotlight', () => {
     );
 
     const halo = container.querySelector('.spotlight-halo');
-    expect(halo.style.background).toContain('rgba(99, 102, 241, 0.15)');
+    expect(halo.style.background).toContain('rgba(99, 102, 241, 0.18)');
+  });
+
+  it('renderiza la capa de food doodles con pointer-events-none', () => {
+    const { container } = render(
+      <BackgroundSpotlight isDark={false}>
+        <div>Patrón Test</div>
+      </BackgroundSpotlight>
+    );
+
+    const doodles = container.querySelector('.food-doodles-pattern');
+    expect(doodles).toBeInTheDocument();
+    expect(doodles).toHaveClass('pointer-events-none');
   });
 
   it('actualiza la posición del gradiente al mover el mouse', () => {
