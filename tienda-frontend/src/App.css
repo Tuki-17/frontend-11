@@ -4,7 +4,8 @@
 }
 
 .cash-price {
-  color: var(--black);
+  color: #0f172a;
+  font-weight: 600;
 }
 
 html.dark .card-footer {
@@ -12,5 +13,6 @@ html.dark .card-footer {
 }
 
 html.dark .cash-price {
-  color: #f0f0f0;
+  color: #e2e8f0;
+  font-weight: 600;
 }

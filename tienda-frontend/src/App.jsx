@@ -8,6 +8,7 @@ import { useConectado } from './hooks/useConectado';
 import { NotificacionesBell } from './components/NotificacionesBell';
 import { ConfigMenu } from './components/ConfigMenu';
 import { useDarkMode } from './hooks/useDarkMode';
+import { BackgroundSpotlight } from './components/BackgroundSpotlight';
 
 export default function App() {
   const conectado = useConectado();
@@ -283,8 +284,9 @@ export default function App() {
   );
 
   return (
-    <div className="app-container">
-      <Toaster position="bottom-right" toastOptions={{
+    <BackgroundSpotlight isDark={isDark}>
+      <div className="app-container">
+        <Toaster position="bottom-right" toastOptions={{
         style: {
           borderRadius: '10px',
           background: '#333',
@@ -923,5 +925,6 @@ export default function App() {
       
       <ActualizacionDisponible />
     </div>
-  );
+  </BackgroundSpotlight>
+);
 }

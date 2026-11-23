@@ -61,7 +61,7 @@ export function ProductCard({ producto, onAddToCart }) {
   const sinStock = producto.stock <= 0;
 
   return (
-    <div className="product-card">
+    <div className="product-card bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:shadow-lg transition-all duration-300">
       {/* Imagen con badge encima */}
       <div className="card-image-wrapper">
         <img
@@ -79,7 +79,7 @@ export function ProductCard({ producto, onAddToCart }) {
 
       {/* Cuerpo */}
       <div className="card-body">
-        <h3 className="card-title">"{producto.nombre}"</h3>
+        <h3 className="card-title text-slate-900 dark:text-slate-200 font-semibold">"{producto.nombre}"</h3>
 
         {/* Deber de información Art. 4 */}
         <div className="deber-informacion">
@@ -87,15 +87,15 @@ export function ProductCard({ producto, onAddToCart }) {
           <span>{advertencia}</span>
         </div>
 
-        <p className="installments-info">
+        <p className="installments-info text-slate-700 dark:text-slate-300">
           {producto.cuotas_cantidad}x ${producto.cuotas_valor.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
         </p>
 
-        <div className="legal-details">
+        <div className="legal-details text-slate-600 dark:text-slate-400">
           PTF: ${producto.precio_final.toLocaleString('es-AR', { minimumFractionDigits: 2 })} | CFT: 0,00% | TNA: 0,00%
         </div>
 
-        <div className="stock-info">
+        <div className="stock-info text-slate-700 dark:text-slate-300">
           <span>Stock: {producto.stock} u.</span>
           <span>Sujeto a disponibilidad</span>
         </div>
@@ -103,7 +103,7 @@ export function ProductCard({ producto, onAddToCart }) {
 
       {/* Footer: precio + botón */}
       <div className="card-footer">
-        <span className="cash-price">
+        <span className="cash-price text-slate-900 dark:text-slate-200 font-semibold">
           ${producto.precio_final.toLocaleString('es-AR')} ARS
         </span>
         <button
